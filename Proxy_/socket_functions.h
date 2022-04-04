@@ -1,4 +1,5 @@
-#pragma comment(lib, "Ws2_32.lib")
+#pragma once
+#pragma comment(lib, "ws2_32.lib")
 
 #include <winsock.h>
 #include <iostream>
@@ -10,7 +11,7 @@ class Socket
 {
 	SOCKET sock;
 public:
-	Socket()
+	Socket(const char* ip)
 	{
 		WSAData wsaData;
 		WORD DLLVersion = MAKEWORD(2, 1);
@@ -21,9 +22,8 @@ public:
 
 		SOCKADDR_IN addr;
 		int sizeofaddr = sizeof(addr);
-		addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // прокси и оригинальный сервер работают 
-													   // на одном и том же ip
-		addr.sin_port = htons(1111); // прокси и оригинальный сервер работают на порту 1111
+		addr.sin_addr.s_addr = inet_addr(ip);
+		addr.sin_port = htons(1112);
 		addr.sin_family = AF_INET;
 
 		SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL);
@@ -33,7 +33,7 @@ public:
 		sock = accept(sListen, (SOCKADDR*)&addr, &sizeofaddr);
 	}
 
-	void SendPacketToProxy(const string& to_send)
+	void SendPacketToClient(const string& to_send)
 	{
 		if (sock == 0) {
 			std::cout << "Error #2\n";
